@@ -4,7 +4,7 @@ import { appContext } from "../context/appContext";
 
 const Sidebar = ({ isOpen , toggleSidebar }) => {
    const { setSummaryId, setChange, setInputValue } = useContext(appContext);
-   const { data } = GetSummary(); // Llamada al hook GetSummary
+   const { data } = GetSummary();
    const [summary, setSummary] = useState(null);
    const [deleteItem, setDeleteItem] = useState('');
    const url = 'http://localhost:5000/api';

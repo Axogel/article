@@ -34,7 +34,7 @@ export default function SendUrl  (urlSummary)  {
     };
 
     fetchData();
-  }, [previus]);
+  }, [urlSummary]);
 
   return { dataSummary, error };
 };

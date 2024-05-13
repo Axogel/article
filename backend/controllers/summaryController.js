@@ -6,29 +6,30 @@ const getResponse = require('../functions/chat')
 
 
 
-const sendUrl = async  (req, res) => {
+const sendUrl = async (req, res) => {
     const {url} = req.body
 
     try {
-
-      const response = await axios.get(url);
-      const html = response.data;
-      const $ = cheerio.load(html);
-      const h1 = $('h1').first().text()
-      const text = $('p').contents().text();
-      console.log(url, "url")
-      let messages =  [{ role: "user", content: `you can summarize this: ${text}` }]
+        const response = await axios.get(url);
+        const html = response.data;
+        const $ = cheerio.load(html);
+        const h1 = $('h1').first().text()
+  
+        const text = $('p').contents().text();
+        let messages = [{ role: "user", content: `you can summarize this: ${text}` }]
         const responseIa = await getResponse(messages)
-      if(!responseIa.choices[0].message.content) res.status(400)
+
+        if(!responseIa.choices[0].message.content) return res.status(400).send({message: "No content available for summary"});
+        const exist = await Summary.find({title:h1 })
+        if(exist.length > 0)  return res.status(400).send({message: "Title must be unique"});
         messages.push({role: "assistant", content: responseIa.choices[0].message.content })
-       const summaryNew =  await Summary.create({
+        const summaryNew =  await Summary.create({
             title: h1,
             url,
             messages
         })
-        console.log(summaryNew._id, "world is mine")
 
-    res.status(200).send({message: responseIa.choices[0].message.content, title: h1, _id: summaryNew._id})
+        res.status(200).send({message: responseIa.choices[0].message.content, title: h1, _id: summaryNew._id})
 
     } catch (error) {
         console.error('Error submitting article:', error.message);
@@ -36,11 +37,10 @@ const sendUrl = async  (req, res) => {
     }
 }
 
+
 const newMessage = async (req, res) => {
-    console.log("waos new message")
     try {
         const { _id, message } = req.body;
-        console.log(_id, message , "sss")
         const summary = await Summary.findById(_id);
         if (!summary) return res.status(404).json({ error: "summary not found" });
         summary.messages.push({ role: "user", content: message });
@@ -61,10 +61,8 @@ const newMessage = async (req, res) => {
 const deleteSummary = async (req, res) => {
 
     const { _id } = req.params;
-    console.log(_id, "_id")
     try {
         await Summary.deleteOne({ _id })
-        console.log("se borro?")
         res.status(200).json({msg: "delete sucesfully"});
     } catch (error) {
         res.status(400).send(error)

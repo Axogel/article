@@ -20,7 +20,6 @@ export default function Form() {
       return
     }
     setEmpiti(false)
-    console.log("se supone que se cambio la vainano jodas ", search.current?.value)
     setInputValue(String(search.current?.value))
     setChange(false)
 
