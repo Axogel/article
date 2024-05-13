@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+#particles{
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+.content {
+    margin-left: 300px;
+    transition: 0.4s all linear;
+  }
+  .content.active {
+    margin-left: 0;
+  }
